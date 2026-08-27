@@ -9,4 +9,7 @@ coverage/
 playwright-report/
 test-results/
 
-Dockerfile*
+backend/.agents/
+backend/.claude/
+backend/.windsurf/
+backend/skills-lock.json
