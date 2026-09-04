@@ -1,7 +1,14 @@
 import type { Request, Response } from "express";
 
-import { signupService } from "./auth.service.js";
-import type { SignupInput } from "./auth.schema.js";
+import {
+  loginService,
+  signupService,
+} from "./auth.service.js";
+
+import type {
+  LoginInput,
+  SignupInput,
+} from "./auth.schema.js";
 
 export const signupController = async (req: Request, res: Response) => {
   try {
@@ -17,6 +24,32 @@ export const signupController = async (req: Request, res: Response) => {
         message: error.message,
       });
     }
+
+    return res.status(500).json({
+      message: "Internal server error",
+    });
+  }
+};
+
+export const loginController = async (req: Request, res: Response) => {
+  try {
+    const user = await loginService(req.body as LoginInput);
+
+    return res.status(200).json({
+      message: "Login successful",
+      user,
+    });
+  } catch (error) {
+    if (
+      error instanceof Error &&
+      error.message === "Invalid email or password"
+    ) {
+      return res.status(401).json({
+        message: error.message,
+      });
+    }
+
+    console.error("Login error:", error);
 
     return res.status(500).json({
       message: "Internal server error",
