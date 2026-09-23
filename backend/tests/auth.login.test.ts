@@ -40,6 +40,9 @@ describe("POST /api/auth/login", () => {
     expect(response.body.message).toBe("Login successful");
     expect(response.body.user.email).toBe("login-test@example.com");
     expect(response.body.user.password).toBeUndefined();
+
+    expect(response.body.accessToken).toBeDefined();
+    expect(typeof response.body.accessToken).toBe("string");
   });
 
   it("should return 401 for incorrect password", async () => {

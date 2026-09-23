@@ -1,6 +1,8 @@
 import type { Request, Response } from "express";
+import { generateAccessToken } from "../../utils/token.js";
 
 import {
+  getMeService,
   loginService,
   signupService,
 } from "./auth.service.js";
@@ -35,9 +37,12 @@ export const loginController = async (req: Request, res: Response) => {
   try {
     const user = await loginService(req.body as LoginInput);
 
+    const accessToken = generateAccessToken(user.id);
+
     return res.status(200).json({
       message: "Login successful",
       user,
+      accessToken,
     });
   } catch (error) {
     if (
@@ -56,6 +61,66 @@ export const loginController = async (req: Request, res: Response) => {
     });
   }
 };
+
+export const meController = async (
+  req: Request,
+  res: Response
+) => {
+  try {
+    const userId = req.user?.userId;
+
+    if (!userId) {
+      return res.status(401).json({
+        message: "Authentication required",
+      });
+    }
+
+    const user = await getMeService(userId);
+
+    return res.status(200).json({
+      user,
+    });
+  } catch (error) {
+    if (
+      error instanceof Error &&
+      error.message === "User not found"
+    ) {
+      return res.status(404).json({
+        message: error.message,
+      });
+    }
+
+    return res.status(500).json({
+      message: "Internal server error",
+    });
+  }
+};
+
+// export const loginController = async (req: Request, res: Response) => {
+//   try {
+//     const user = await loginService(req.body as LoginInput);
+
+//     return res.status(200).json({
+//       message: "Login successful",
+//       user,
+//     });
+//   } catch (error) {
+//     if (
+//       error instanceof Error &&
+//       error.message === "Invalid email or password"
+//     ) {
+//       return res.status(401).json({
+//         message: error.message,
+//       });
+//     }
+
+//     console.error("Login error:", error);
+
+//     return res.status(500).json({
+//       message: "Internal server error",
+//     });
+//   }
+// };
 
 
 
