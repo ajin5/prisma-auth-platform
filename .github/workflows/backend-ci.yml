@@ -30,6 +30,7 @@ jobs:
 
     env:
       DATABASE_URL: postgresql://app_user:app_password@localhost:5432/prisma_auth_test
+      JWT_SECRET: ci-test-jwt-secret-for-automated-tests
 
     steps:
       - name: Checkout repository
